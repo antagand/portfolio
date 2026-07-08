@@ -1,14 +1,14 @@
 name: Build And Push to ECR
 
 on:
-    push:
-        #pull_requests:
-        #   branches: ['main', 'dev']
-        branches: ['main']
-permissions:
-    id-token: write
-    contents: read
+  push:
+    # pull_request:
+    #   branches: ['main', 'dev']
+    branches: ['main']
 
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   build_scan:
@@ -34,16 +34,17 @@ jobs:
           format: table
           exit-code: 0
           ignore-unfixed: true
-          severity: CRITICAL,HIGH 
+          severity: CRITICAL,HIGH
+
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-           role-to-assume: arn:aws:iam::533267394073:role/github-action-role  
-           aws-region: aws-region-1 
+          role-to-assume: arn:aws:iam::533267394073:role/github-action-role
+          aws-region: us-east-1
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Push Image to Ecr
         run: docker push 533267394073.dkr.ecr.us-east-1.amazonaws.com/my-repo:latest
-
