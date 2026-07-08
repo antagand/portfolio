@@ -46,3 +46,12 @@ jobs:
 
       - name: Push Image to Ecr
         run: docker push ${{ secrets.ECR_REPO }}/my-repo:latest
+
+  Deploy_to_ecs: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Ecs
+        run: echo "Deploy to Ecs"
+
+
+
