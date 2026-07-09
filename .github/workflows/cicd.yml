@@ -23,12 +23,12 @@ jobs:
           severity: HIGH,CRITICAL
           exit-code: 0
       - name: Build Docker Image
-        run: docker build -t 267860592636.dkr.ecr.us-east-1.amazonaws.com/demo-repo:latest .
+        run: docker build -t ${{secrets.ECR_REPO}}/demo-repo:latest .
 
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: 267860592636.dkr.ecr.us-east-1.amazonaws.com/demo-repo:latest
+          image-ref: ${{secrets.ECR_REPO}}/demo-repo:latest
           format: table
           exit-code: 0
           ignore-unfixed: true
@@ -43,3 +43,10 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Push Image to Ecr
+        run: docker push  
+      - name: Push Image to Ecr
+        run: docker push ${{secrets.ECR_REPO}}/demo-repo:latest
