@@ -2,9 +2,8 @@ name: Build And Push to ECR
 
 on:
   push:
-    # pull_request:
-    #   branches: ['main', 'dev']
-    branches: ['main']
+    branches:
+      - main
 
 permissions:
   id-token: write
@@ -13,24 +12,27 @@ permissions:
 jobs:
   build_scan:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v7
-      - name: Trivy Scan
+        uses: actions/checkout@v4
+
+      - name: Trivy File Scan
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          scan-type: 'fs'
+          scan-type: fs
           severity: HIGH,CRITICAL
-          exit-code: 0
+          exit-code: "0"
+
       - name: Build Docker Image
-        run: docker build -t ${{secrets.ECR_REPO}}/demo-repo:lates . 
+        run: docker build -t ${{ secrets.ECR_REPO }}/demo-repo:latest .
 
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: ${{secrets.ECR_REPO}}/demo-repo:latest
+          image-ref: ${{ secrets.ECR_REPO }}/demo-repo:latest
           format: table
-          exit-code: 0
+          exit-code: "0"
           ignore-unfixed: true
           severity: CRITICAL,HIGH
 
@@ -38,13 +40,10 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
-          role-to-assume: ${{secrets.AWS_ROLE_ARN}}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
 
-     
       - name: Login to Amazon ECR
-        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-      - name: Push Image to Ecr
-        run: docker push  
-      - name: Push Image to Ecr
-        run: docker push ${{secrets.ECR_REPO}}/demo-repo:latest
+
+      - name: Push Image to ECR
+        run: docker push ${{ secrets.ECR_REPO }}/demo-repo:latest
